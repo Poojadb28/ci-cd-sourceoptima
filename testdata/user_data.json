@@ -4,17 +4,17 @@
     "password": "aspl1234"
   },
   "create_admin_user": {
-    "full_name": "TestUser1",
-    "email": "testuser1@gmail.com",
-    "password": "Test@1234",
-    "confirm_password": "Test@1234",
+    "full_name": "Pooja Gowda",
+    "email": "poojagowda@gmail.com",
+    "password": "aspl@1234",
+    "confirm_password": "aspl@1234",
     "role": "Admin - Organization Administrator"
   },
   "create_user": {
-    "full_name": "TestUser2",
-    "email": "testuser2@gmail.com",
-    "password": "Test@1234",
-    "confirm_password": "Test@1234",
+    "full_name": "Pooja",
+    "email": "poojadb1147@aspl.ai",
+    "password": "aspl@1234",
+    "confirm_password": "aspl@1234",
     "role": "Customer - Standard User"
   }
 }
