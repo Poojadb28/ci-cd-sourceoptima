@@ -1,6 +1,9 @@
-
 pipeline {
     agent any
+
+    environment {
+        VENV = "venv"
+    }
 
     stages {
 
@@ -10,25 +13,38 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Setup Python Environment') {
             steps {
-                bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python36\\python.exe" -m pip install -r requirements.txt'
+                bat '''
+                python -m venv %VENV%
+                %VENV%\\Scripts\\activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python36\\python.exe" -m pytest'
+                bat '''
+                %VENV%\\Scripts\\activate
+                pytest --html=reports/report.html --self-contained-html
+                '''
             }
         }
     }
 
     post {
         always {
+
+            // Archive reports (important)
+            archiveArtifacts artifacts: 'reports/*.html', fingerprint: true
+
+            // Publish HTML report
             publishHTML(target: [
                 reportDir: 'reports',
                 reportFiles: 'report.html',
-                reportName: 'Test Report',
+                reportName: 'Automation Test Report',
                 keepAll: true,
                 alwaysLinkToLastBuild: true,
                 allowMissing: true
