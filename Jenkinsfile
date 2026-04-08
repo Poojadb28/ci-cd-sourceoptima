@@ -13,13 +13,21 @@ pipeline {
             }
         }
 
+          stage('Check Python') {
+            steps {
+                bat "where python"
+                bat "python --version"
+            }
+        }
+
+
         stage('Setup Python') {
             steps {
                 bat "${PYTHON} --version"
                 bat "pip install --upgrade pip"
             }
         }
-
+      
         stage('Install Dependencies') {
             steps {
                 bat "pip install -r requirements.txt"
