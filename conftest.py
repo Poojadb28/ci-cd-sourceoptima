@@ -41,7 +41,7 @@ def browser():
     # Optional implicit wait
     driver.implicitly_wait(5)
 
-    driver.maximize_window()
+    # driver.maximize_window()
 
     yield driver
 

@@ -9,7 +9,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git url: 'YOUR_GITHUB_REPO_URL', branch: 'main'
+                git url: 'https://github.com/Poojadb28/demo_sourceoptima', branch: 'main'
             }
         }
 
@@ -23,6 +23,14 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 bat "pip install -r requirements.txt"
+            }
+        }
+
+        stage('Prepare Folders') {
+            steps {
+                bat "mkdir reports"
+                bat "mkdir screenshots"
+                bat "mkdir downloads"
             }
         }
 
