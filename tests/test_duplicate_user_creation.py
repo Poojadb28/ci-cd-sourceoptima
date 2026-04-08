@@ -1,11 +1,16 @@
 import pytest
 import json
+from selenium.webdriver.support.ui import WebDriverWait
+
 from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
+@pytest.mark.order(6)
 @pytest.mark.regression
 def test_duplicate_create_user(browser):
+
+    wait = WebDriverWait(browser, 20)
 
     browser.get(BASE_URL)
 
@@ -21,18 +26,17 @@ def test_duplicate_create_user(browser):
     admin = SystemAdminPage(browser)
 
     admin.open_user_admin()
-
     admin.click_create_user()
 
-    # Attempt to create the same user again
     admin.fill_user_details(
         user_data["full_name"],
-        user_data["email"],   # same email already exists
-        user_data["password"]
+        user_data["email"],
+        user_data["password"],
+        user_data["role"]   
     )
 
     admin.submit_user()
 
-    error_msg = admin.get_duplicate_user_error()
+    wait.until(lambda d: "failed" in admin.get_duplicate_user_error().lower())
 
-    assert error_msg == "Failed to create user"
+    assert admin.get_duplicate_user_error() == "Failed to create user"

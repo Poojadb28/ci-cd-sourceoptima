@@ -1,0 +1,45 @@
+{
+  "logins": {
+    "system_admin": {
+      "email": "prekshita@sourceoptima.com",
+      "password": "aspl1234"
+    },
+    "system_admin_invalid": {
+      "email": "pooja@gmail",
+      "password": "aspl@1234"
+    },
+    "admin": {
+      "email": "poojagowda@gmail.com",
+      "password": "aspl@1234"
+    },
+    "admin_invalid": {
+      "email": "poojagowda@gmail.com",
+      "password": "aspl"
+    },
+    "user": {
+      "email": "poojadb1147@aspl.ai",
+      "password": "aspl@1234"
+    },
+    "user_invalid": {
+      "email": "poojadb1147@aspl.ai",
+      "password": "aspl"
+    }
+  },
+
+  "users": {
+    "create_admin": {
+      "full_name": "Pooja Gowda",
+      "email": "poojagowda@gmail.com",
+      "password": "aspl@1234",
+      "confirm_password": "aspl@1234",
+      "role": "Admin - Organization Administrator"
+    },
+    "create_user": {
+      "full_name": "Pooja",
+      "email": "poojadb1147@aspl.ai",
+      "password": "aspl@1234",
+      "confirm_password": "aspl@1234",
+      "role": "Customer - Standard User"
+    }
+  }
+}

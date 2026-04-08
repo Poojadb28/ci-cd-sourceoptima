@@ -3,13 +3,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from config.config import TIMEOUT
 
 
 class DrawingCheckerGeneralPage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 120)
+        self.wait = WebDriverWait(driver, TIMEOUT)
 
     # LOCATORS
     dropdown = (By.XPATH, "//select[contains(@class,'text-sm')]")
@@ -25,23 +26,35 @@ class DrawingCheckerGeneralPage:
 
     close_icon = (By.XPATH, "//button[contains(@class,'p-2')]")
 
+    # ================= COMMON ================= #
+
+    def safe_click(self, element):
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
+        self.driver.execute_script("arguments[0].click();", element)
+
     # ---------------- ACTIONS ----------------
 
     def select_drawing_checker_general(self):
-        self.wait.until(EC.element_to_be_clickable(self.dropdown)).click()
-        self.wait.until(EC.element_to_be_clickable(self.option)).click()
+        dropdown = self.wait.until(EC.element_to_be_clickable(self.dropdown))
+        self.safe_click(dropdown)
+
+        option = self.wait.until(EC.element_to_be_clickable(self.option))
+        self.safe_click(option)
 
     def click_run(self):
-        self.wait.until(EC.element_to_be_clickable(self.run_btn)).click()
+        button = self.wait.until(EC.element_to_be_clickable(self.run_btn))
+        self.safe_click(button)
 
     def wait_for_processing(self):
         self.wait.until(EC.element_to_be_clickable(self.view_details))
 
     def click_view_results(self):
-        self.wait.until(EC.element_to_be_clickable(self.view_results)).click()
+        button = self.wait.until(EC.element_to_be_clickable(self.view_results))
+        self.safe_click(button)
 
     def click_view_details(self):
-        self.wait.until(EC.element_to_be_clickable(self.view_details)).click()
+        button = self.wait.until(EC.element_to_be_clickable(self.view_details))
+        self.safe_click(button)
 
     def open_report_tab(self):
         popup = self.wait.until(
@@ -54,10 +67,9 @@ class DrawingCheckerGeneralPage:
             )
         )
 
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", tab)
-
-        import time
-        time.sleep(2)
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'});", tab
+        )
 
         try:
             ActionChains(self.driver)\
@@ -68,20 +80,22 @@ class DrawingCheckerGeneralPage:
         except:
             self.driver.execute_script("arguments[0].click();", tab)
 
-        time.sleep(5)
-
-        # VERIFY TAB SWITCH (CRITICAL)
-        content_loaded = len(self.driver.find_elements(
-            By.XPATH, "//button[@title='Download Drawing Checker PDF Report']"
-        ))
-
-        if content_loaded == 0:
-            
-            # Retry once more (important)
+        # VERIFY TAB SWITCH (NO sleep, replaced with wait)
+        try:
+            self.wait.until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//button[@title='Download Drawing Checker PDF Report']")
+                )
+            )
+        except:
             self.driver.execute_script("arguments[0].click();", tab)
-            time.sleep(5)
 
-        # Final check
+            self.wait.until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//button[@title='Download Drawing Checker PDF Report']")
+                )
+            )
+
         buttons = self.driver.find_elements(
             By.XPATH, "//button[@title='Download Drawing Checker PDF Report']"
         )
@@ -91,18 +105,19 @@ class DrawingCheckerGeneralPage:
 
     def download_report(self, download_dir):
 
+        if not os.path.exists(download_dir):
+            os.makedirs(download_dir)
+
         before_files = set(os.listdir(download_dir))
 
-        #USE FLEXIBLE LOCATOR
         element = self.wait.until(
             EC.element_to_be_clickable(
                 (By.XPATH, "//button[contains(@title,'Download Drawing Checker')]")
             )
         )
 
-        self.driver.execute_script("arguments[0].click();", element)
+        self.safe_click(element)
 
-        # WAIT FOR NEW FILE (BEST PRACTICE)
         def file_downloaded(driver):
             after_files = set(os.listdir(download_dir))
             new_files = after_files - before_files
@@ -119,8 +134,6 @@ class DrawingCheckerGeneralPage:
     def close_popup(self):
 
         element = self.wait.until(EC.element_to_be_clickable(self.close_icon))
-        self.driver.execute_script("arguments[0].click();", element)
+        self.safe_click(element)
 
         self.wait.until(EC.element_to_be_clickable(self.dropdown))
-
-    

@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import os
 
 
 class SystemStatsPage:
@@ -17,10 +18,31 @@ class SystemStatsPage:
         self.driver = driver
         self.wait = WebDriverWait(driver, 20)
 
+    # ================= COMMON ================= #
+
+    def safe_click(self, locator):
+        element = self.wait.until(EC.element_to_be_clickable(locator))
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
+        self.driver.execute_script("arguments[0].click();", element)
+
+    # ================= ACTIONS ================= #
+
     def select_time_range(self, locator):
-        self.wait.until(EC.element_to_be_clickable(locator)).click()
+        self.safe_click(locator)
 
     def click_download_logs(self):
+        self.safe_click(self.download_logs_button)
+
+    # ================= DOWNLOAD VALIDATION ================= #
+
+    def wait_for_logs_download(self, download_dir):
+
+        if not os.path.exists(download_dir):
+            os.makedirs(download_dir)
+
         self.wait.until(
-            EC.element_to_be_clickable(self.download_logs_button)
-        ).click()
+            lambda driver: any(
+                f.lower().endswith(".txt")
+                for f in os.listdir(download_dir)
+            )
+        )

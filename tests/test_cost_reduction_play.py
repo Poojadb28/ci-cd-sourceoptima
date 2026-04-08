@@ -1,12 +1,17 @@
 import pytest
 import json
+from selenium.webdriver.support.ui import WebDriverWait
+
 from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from pages.cost_reduction_play_page import CostReductionPage
 from config.config import BASE_URL
 
+@pytest.mark.order(21)
 @pytest.mark.regression
 def test_cost_reduction_play(browser):
+
+    wait = WebDriverWait(browser, 20)
 
     browser.get(BASE_URL)
 
@@ -14,14 +19,11 @@ def test_cost_reduction_play(browser):
     project = ProjectsPage(browser)
     cost = CostReductionPage(browser)
 
-    # Load data
     with open("testdata/login_data.json") as file:
         data = json.load(file)
 
     email = data["system_admin_login"]["email"]
     password = data["system_admin_login"]["password"]
-
-    # FLOW
 
     login.login(email, password)
 
@@ -38,6 +40,8 @@ def test_cost_reduction_play(browser):
     cost.click_view_results()
     cost.click_view_details()
     cost.open_report_tab()
+
+    wait.until(lambda d: True)
 
     cost.take_screenshot()
     cost.close_popup()

@@ -1,10 +1,13 @@
 import pytest
 import json
+import os
+
 from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from pages.drawing_checker_both_play_page import DrawingCheckerPage
 from config.config import BASE_URL
 
+@pytest.mark.order(23)
 @pytest.mark.regression
 def test_drawing_checker_both_play(browser):
 
@@ -14,16 +17,14 @@ def test_drawing_checker_both_play(browser):
     project = ProjectsPage(browser)
     drawing = DrawingCheckerPage(browser)
 
-    # Load data
     with open("testdata/login_data.json") as file:
         data = json.load(file)
 
     email = data["system_admin_login"]["email"]
     password = data["system_admin_login"]["password"]
 
-    download_dir = r"C:\Users\pooja.db\Downloads"
-
-    # ---------------- FLOW ----------------
+    download_dir = os.path.abspath("downloads")
+    os.makedirs(download_dir, exist_ok=True)
 
     login.login(email, password)
 

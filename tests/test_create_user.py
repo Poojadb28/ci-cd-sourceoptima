@@ -1,11 +1,16 @@
 import pytest
 import json
+from selenium.webdriver.support.ui import WebDriverWait
+
 from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
+@pytest.mark.order(4)
 @pytest.mark.smoke
 def test_create_user(browser):
+
+    wait = WebDriverWait(browser, 20)
 
     browser.get(BASE_URL)
 
@@ -21,17 +26,17 @@ def test_create_user(browser):
     admin = SystemAdminPage(browser)
 
     admin.open_user_admin()
-
     admin.click_create_user()
 
     admin.fill_user_details(
         user_data["full_name"],
         user_data["email"],
-        user_data["password"]
+        user_data["password"],
+        user_data["role"]   
     )
 
     admin.submit_user()
 
-    success_msg = admin.get_success_message()
+    wait.until(lambda d: "success" in admin.get_success_message().lower())
 
-    assert success_msg == "User created successfully"
+    assert admin.get_success_message() == "User created successfully"

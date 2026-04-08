@@ -1,14 +1,19 @@
 import pytest
 import json
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 from pages.login_page import LoginPage
 from config.config import BASE_URL
 
+@pytest.mark.order(33)
 @pytest.mark.regression
 def test_user_invalid_login(browser):
 
+    wait = WebDriverWait(browser, 20)
+
     browser.get(BASE_URL)
 
-    # Load test data
     with open("testdata/login_data.json") as file:
         data = json.load(file)
 
@@ -16,6 +21,9 @@ def test_user_invalid_login(browser):
     password = data["user_invalid_login"]["password"]
 
     login = LoginPage(browser)
+
+    # Wait for login page ready
+    wait.until(EC.presence_of_element_located(login.USERNAME_INPUT))
 
     login.click_login_button()
     login.enter_email(email)

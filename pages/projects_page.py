@@ -3,13 +3,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from config.config import TIMEOUT
 
 
 class ProjectsPage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 120)
+        self.wait = WebDriverWait(driver, TIMEOUT)
 
     # ================= LOCATORS ================= #
 
@@ -46,35 +47,43 @@ class ProjectsPage:
 
     # ================= COMMON METHODS ================= #
 
+    def safe_click(self, locator):
+        element = self.wait.until(EC.element_to_be_clickable(locator))
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
+        self.driver.execute_script("arguments[0].click();", element)
+
     def open_projects(self):
-        self.wait.until(EC.element_to_be_clickable(self.projects_button)).click()
+        self.safe_click(self.projects_button)
 
     def open_root_space(self, space_name):
         locator = (By.XPATH, f"//h4[contains(text(),'{space_name}')]")
         element = self.wait.until(EC.visibility_of_element_located(locator))
-        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});",element)
-        self.driver.execute_script("arguments[0].click();",element)
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
+        self.driver.execute_script("arguments[0].click();", element)
 
     def open_project(self, project_name):
         locator = (By.XPATH, f"//h3[normalize-space()='{project_name}']")
         element = self.wait.until(EC.visibility_of_element_located(locator))
-        self.driver.execute_script("arguments[0].click();",element)
+        self.driver.execute_script("arguments[0].click();", element)
 
     # ================= ROOT SPACE ================= #
 
     def right_click_projects_area(self):
-        area = self.wait.until(EC.presence_of_element_located(self.page_body))
+        area = self.wait.until(EC.visibility_of_element_located(self.page_body))
         ActionChains(self.driver).context_click(area).perform()
 
     def create_root_space(self, name):
-        self.wait.until(EC.element_to_be_clickable(self.new_root_space_button)).click()
-        self.wait.until(EC.visibility_of_element_located(self.space_name_field)).send_keys(name)
+        self.safe_click(self.new_root_space_button)
 
-        icon = self.wait.until(EC.presence_of_element_located(self.icon_button))
+        field = self.wait.until(EC.visibility_of_element_located(self.space_name_field))
+        field.clear()
+        field.send_keys(name)
+
+        icon = self.wait.until(EC.element_to_be_clickable(self.icon_button))
         self.driver.execute_script("arguments[0].click();", icon)
 
-        self.wait.until(EC.element_to_be_clickable(self.blue_color)).click()
-        self.wait.until(EC.element_to_be_clickable(self.create_space_button)).click()
+        self.safe_click(self.blue_color)
+        self.safe_click(self.create_space_button)
 
     def get_success_message(self):
         return self.wait.until(EC.visibility_of_element_located(self.success_message)).text
@@ -82,14 +91,20 @@ class ProjectsPage:
     # ================= PROJECT ================= #
 
     def create_project(self, name, file_path):
-        self.wait.until(EC.element_to_be_clickable(self.new_upload_button)).click()
-        self.wait.until(EC.visibility_of_element_located(self.project_name_field)).send_keys(name)
+        self.safe_click(self.new_upload_button)
+
+        field = self.wait.until(EC.visibility_of_element_located(self.project_name_field))
+        field.clear()
+        field.send_keys(name)
+
+        # ✅ Jenkins-safe file path
+        file_path = os.path.abspath(file_path)
 
         upload = self.wait.until(EC.presence_of_element_located(self.upload_input))
         self.driver.execute_script("arguments[0].style.display='block';", upload)
         upload.send_keys(file_path)
 
-        self.wait.until(EC.element_to_be_clickable(self.upload_button)).click()
+        self.safe_click(self.upload_button)
 
     def verify_project_created(self, name):
         locator = (By.XPATH, f"//h3[normalize-space()='{name}']")
@@ -98,12 +113,13 @@ class ProjectsPage:
     # ================= DELETE PROJECT ================= #
 
     def delete_project(self):
-        self.wait.until(EC.element_to_be_clickable(self.delete_icon)).click()
+        self.safe_click(self.delete_icon)
 
         confirm = self.wait.until(EC.visibility_of_element_located(self.confirm_delete_input))
+        confirm.clear()
         confirm.send_keys("DELETE")
 
-        self.wait.until(EC.element_to_be_clickable(self.delete_button)).click()
+        self.safe_click(self.delete_button)
 
     def verify_project_deleted(self):
         return self.wait.until(EC.visibility_of_element_located(self.delete_success_message)).is_displayed()
@@ -122,7 +138,7 @@ class ProjectsPage:
     # ================= SELECT FILES ================= #
 
     def select_all_files(self):
-        self.wait.until(EC.element_to_be_clickable(self.select_all_button)).click()
-        
+        self.safe_click(self.select_all_button)
+
     def deselect_all_files(self):
-        self.wait.until(EC.element_to_be_clickable(self.deselect_all_button)).click()
+        self.safe_click(self.deselect_all_button)

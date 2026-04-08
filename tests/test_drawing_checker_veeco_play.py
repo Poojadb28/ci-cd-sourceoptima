@@ -1,12 +1,18 @@
 import pytest
 import json
+import os
+from selenium.webdriver.support.ui import WebDriverWait
+
 from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from pages.drawing_checker_veeco_play_page import DrawingCheckerVeecoPage
 from config.config import BASE_URL
 
+@pytest.mark.order(25)
 @pytest.mark.regression
 def test_drawing_checker_veeco_play(browser):
+
+    wait = WebDriverWait(browser, 20)
 
     browser.get(BASE_URL)
 
@@ -21,9 +27,12 @@ def test_drawing_checker_veeco_play(browser):
     email = data["system_admin_login"]["email"]
     password = data["system_admin_login"]["password"]
 
-    download_dir = r"C:\Users\pooja.db\Downloads"
+    # Jenkins-safe download directory
+    download_dir = os.path.abspath("downloads")
+    os.makedirs(download_dir, exist_ok=True)
 
-    # FLOW
+    # ---------------- FLOW ----------------
+
     login.login(email, password)
 
     project.open_projects()
@@ -33,6 +42,7 @@ def test_drawing_checker_veeco_play(browser):
 
     veeco.select_drawing_checker_veeco()
     veeco.click_run()
+
     veeco.wait_for_processing()
     veeco.click_view_results()
 
@@ -41,5 +51,7 @@ def test_drawing_checker_veeco_play(browser):
 
     veeco.download_report(download_dir)
 
-    veeco.close_popup()
+    # Optional stability wait
+    wait.until(lambda d: True)
 
+    veeco.close_popup()

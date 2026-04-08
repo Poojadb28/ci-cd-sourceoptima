@@ -1,41 +1,44 @@
 import pytest
 import json
+import time
+from selenium.webdriver.support.ui import WebDriverWait
+
 from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from config.config import BASE_URL
 
+@pytest.mark.order(9)
 @pytest.mark.smoke
 def test_create_root_space(browser):
 
+    wait = WebDriverWait(browser, 20)
+
     browser.get(BASE_URL)
 
-    # Load login data
     with open("testdata/login_data.json") as file:
         data = json.load(file)
 
     email = data["system_admin_login"]["email"]
     password = data["system_admin_login"]["password"]
 
-    # Login
     login = LoginPage(browser)
     login.login(email, password)
 
     projects = ProjectsPage(browser)
 
     projects.open_projects()
-
     projects.right_click_projects_area()
 
     projects.click_new_root_space()
 
-    projects.enter_space_name("TestSpace1")
+    # Dynamic name
+    space_name = f"TestSpace_{int(time.time())}"
 
+    projects.enter_space_name(space_name)
     projects.choose_icon()
-
     projects.select_blue_color()
-
     projects.click_create_space()
 
-    success_msg = projects.get_success_message()
+    wait.until(lambda d: "success" in projects.get_success_message().lower())
 
-    assert success_msg == "Space created successfully!"
+    assert projects.get_success_message() == "Space created successfully!"

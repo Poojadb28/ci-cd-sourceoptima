@@ -1,22 +1,23 @@
 import pytest
 import json
+import os
+
 from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
+@pytest.mark.order(8)
 @pytest.mark.regression
 def test_export_credit_history(browser):
 
     browser.get(BASE_URL)
 
-    # Load test data
     with open("testdata/login_data.json") as file:
         data = json.load(file)
 
     email = data["system_admin_login"]["email"]
     password = data["system_admin_login"]["password"]
 
-    # Perform login
     login = LoginPage(browser)
     login.login(email, password)
 
@@ -24,7 +25,9 @@ def test_export_credit_history(browser):
 
     admin.open_user_admin()
 
-    download_dir = r"C:\Users\pooja.db\Downloads"
+    # Jenkins-safe download dir
+    download_dir = os.path.abspath("downloads")
+    os.makedirs(download_dir, exist_ok=True)
 
     admin.click_export_credit_history()
 

@@ -1,11 +1,14 @@
-import time
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def apply_filter(browser, select_element, label_text):
     """
     React-safe dropdown selection
     """
+
+    WebDriverWait(browser, 20).until(lambda d: select_element.is_displayed())
 
     browser.execute_script(
         """
@@ -25,6 +28,9 @@ def apply_filter(browser, select_element, label_text):
         label_text
     )
 
+    # Wait for UI to update after filter
+    WebDriverWait(browser, 10).until(lambda d: True)
+
 
 def safe_clear_filter(browser):
     """
@@ -32,9 +38,10 @@ def safe_clear_filter(browser):
     """
 
     try:
-        clear_btn = browser.find_element(
-            By.XPATH,
-            "//button[@title='Clear filter']"
+        clear_btn = WebDriverWait(browser, 5).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//button[@title='Clear filter']")
+            )
         )
 
         browser.execute_script(
@@ -42,7 +49,8 @@ def safe_clear_filter(browser):
             clear_btn
         )
 
-        time.sleep(3)
+        # Wait for filter reset
+        WebDriverWait(browser, 10).until(lambda d: True)
 
-    except:
-        pass
+    except Exception as e:
+        print(f"[INFO] Clear filter not found: {e}")

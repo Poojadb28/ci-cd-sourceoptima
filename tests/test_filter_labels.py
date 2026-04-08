@@ -1,24 +1,26 @@
 import pytest
 import json
 import os
-import time
+
+from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from utils.filter_utils import apply_filter, safe_clear_filter
 from config.config import BASE_URL
 
+@pytest.mark.order(17)
 @pytest.mark.regression
 def test_filter_labels(browser):
 
     # Ensure screenshots folder exists
-    screenshots_dir = os.path.join(os.getcwd(), "screenshots")
+    screenshots_dir = os.path.abspath("screenshots")
+    os.makedirs(screenshots_dir, exist_ok=True)
 
-    if not os.path.exists(screenshots_dir):
-        os.makedirs(screenshots_dir)
-
+    # Open URL
     browser.get(BASE_URL)
 
+    # Load test data
     with open("testdata/login_data.json") as file:
         data = json.load(file)
 
@@ -29,17 +31,18 @@ def test_filter_labels(browser):
     login = LoginPage(browser)
     login.login(email, password)
 
+    # Navigate to project
     projects = ProjectsPage(browser)
-
     projects.open_projects()
     projects.open_root_space("TestSpace1")
     projects.open_project("TestFile")
 
     dropdown = projects.get_filter_dropdown()
 
-     # -------- All Labels --------
+    # -------- All Labels --------
     apply_filter(browser, dropdown, "All Labels")
-    time.sleep(6)
+
+    WebDriverWait(browser, 10).until(lambda d: True)
 
     browser.save_screenshot(
         os.path.join(screenshots_dir, "All_Labels_Filter.png")
@@ -47,7 +50,8 @@ def test_filter_labels(browser):
 
     # -------- CAD Drawing Filter --------
     apply_filter(browser, dropdown, "CAD Drawing")
-    time.sleep(5)
+
+    WebDriverWait(browser, 10).until(lambda d: True)
 
     browser.save_screenshot(
         os.path.join(screenshots_dir, "CAD_Drawing_Filter.png")
@@ -55,15 +59,13 @@ def test_filter_labels(browser):
 
     safe_clear_filter(browser)
 
-
     # -------- Technical Specification --------
     apply_filter(browser, dropdown, "Technical Specification")
-    time.sleep(8)
+
+    WebDriverWait(browser, 10).until(lambda d: True)
 
     browser.save_screenshot(
         os.path.join(screenshots_dir, "Technical_Specification_Filter.png")
     )
 
     safe_clear_filter(browser)
-
-   

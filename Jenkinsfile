@@ -2,53 +2,57 @@ pipeline {
     agent any
 
     environment {
-        VENV = "venv"
+        PYTHON = "python"
     }
 
     stages {
 
         stage('Checkout Code') {
             steps {
-                checkout scm
+                git url: 'YOUR_GITHUB_REPO_URL', branch: 'main'
             }
         }
 
-        stage('Setup Python Environment') {
+        stage('Setup Python') {
             steps {
-                bat '''
-                python -m venv %VENV%
-                %VENV%\\Scripts\\activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                '''
+                bat "${PYTHON} --version"
+                bat "pip install --upgrade pip"
             }
         }
 
-        stage('Run Tests') {
+        stage('Install Dependencies') {
             steps {
-                bat '''
-                %VENV%\\Scripts\\activate
-                pytest --html=reports/report.html --self-contained-html
-                '''
+                bat "pip install -r requirements.txt"
+            }
+        }
+
+        stage('Run Smoke Tests') {
+            steps {
+                bat "pytest -m smoke -n auto --html=reports/smoke_report.html"
+            }
+        }
+
+        stage('Run Regression Tests') {
+            steps {
+                bat "pytest -m regression -n auto --html=reports/regression_report.html"
             }
         }
     }
 
     post {
+
         always {
+            archiveArtifacts artifacts: 'reports/*.html', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'screenshots/*.png', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'downloads/*', allowEmptyArchive: true
+        }
 
-            // Archive reports (important)
-            archiveArtifacts artifacts: 'reports/*.html', fingerprint: true
+        success {
+            echo "✅ Build Passed - All tests successful"
+        }
 
-            // Publish HTML report
-            publishHTML(target: [
-                reportDir: 'reports',
-                reportFiles: 'report.html',
-                reportName: 'Automation Test Report',
-                keepAll: true,
-                alwaysLinkToLastBuild: true,
-                allowMissing: true
-            ])
+        failure {
+            echo "❌ Build Failed - Check reports"
         }
     }
 }

@@ -1,12 +1,18 @@
 import pytest
 import json
+import os
+from selenium.webdriver.support.ui import WebDriverWait
+
 from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from pages.drawing_checker_general_play_page import DrawingCheckerGeneralPage
 from config.config import BASE_URL
 
+@pytest.mark.order(24)
 @pytest.mark.regression
 def test_drawing_checker_general_play(browser):
+
+    wait = WebDriverWait(browser, 20)
 
     browser.get(BASE_URL)
 
@@ -21,7 +27,9 @@ def test_drawing_checker_general_play(browser):
     email = data["system_admin_login"]["email"]
     password = data["system_admin_login"]["password"]
 
-    download_dir = r"C:\Users\pooja.db\Downloads"
+    # Jenkins-safe download directory
+    download_dir = os.path.abspath("downloads")
+    os.makedirs(download_dir, exist_ok=True)
 
     # ---------------- FLOW ----------------
 
@@ -42,5 +50,8 @@ def test_drawing_checker_general_play(browser):
     general.open_report_tab()
 
     general.download_report(download_dir)
+
+    # Optional stability wait
+    wait.until(lambda d: True)
 
     general.close_popup()

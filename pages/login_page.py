@@ -16,6 +16,17 @@ class LoginPage:
     LOGIN_BUTTON = (By.XPATH, "//button[@type='submit']")
     DASHBOARD_ELEMENT = (By.XPATH, "//div[contains(text(),'Dashboard')]")
 
+    ERROR_MESSAGE = (By.XPATH, "//div[contains(@class,'error')]")
+
+    # ================= COMMON ================= #
+
+    def safe_click(self, locator):
+        element = self.wait.until(EC.element_to_be_clickable(locator))
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
+        self.driver.execute_script("arguments[0].click();", element)
+
+    # ================= ACTIONS ================= #
+
     # Open Application URL
     def open_url(self):
         self.driver.get(BASE_URL)
@@ -38,9 +49,7 @@ class LoginPage:
 
     # Click Login
     def click_login(self):
-        self.wait.until(
-            EC.element_to_be_clickable(self.LOGIN_BUTTON)
-        ).click()
+        self.safe_click(self.LOGIN_BUTTON)
 
     # Complete Login Action
     def login(self, username, password):
@@ -48,15 +57,15 @@ class LoginPage:
         self.enter_password(password)
         self.click_login()
 
-    # Validation: Check Dashboard
+    # ================= VALIDATION ================= #
+
+    # Check Dashboard
     def is_dashboard_visible(self):
         return self.wait.until(
             EC.visibility_of_element_located(self.DASHBOARD_ELEMENT)
         ).is_displayed()
 
     # Negative Scenario (Invalid Login)
-    ERROR_MESSAGE = (By.XPATH, "//div[contains(@class,'error')]")
-
     def get_error_message(self):
         return self.wait.until(
             EC.visibility_of_element_located(self.ERROR_MESSAGE)
