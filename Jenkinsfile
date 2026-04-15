@@ -9,31 +9,25 @@ pipeline {
             }
         }
 
-        // stage('Install Dependencies') {
-        //     steps {
-        //         bat "pip install -r requirements.txt"
-        //     }
-        // }
-
         stage('Install Dependencies') {
             steps {
                 bat """
-                python --version
-                python -m pip install --upgrade pip
-                python -m pip install -r requirements.txt
+                "C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" --version
+                "C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" -m pip install --upgrade pip
+                "C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe" -m pip install -r requirements.txt
                 """
             }
         }
 
         stage('Prepare Folders') {
             steps {
-                bat "mkdir reports"
+                bat "if not exist reports mkdir reports"
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat "pytest -n auto --html=reports/report.html"
+                bat "\"C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" -m pytest -n auto --html=reports/report.html"
             }
         }
     }
