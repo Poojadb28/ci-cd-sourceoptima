@@ -11,40 +11,81 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python311\\python.exe" -m pip install -r requirements.txt'
-                bat '"C:\\Users\\Dell\\Downloads\\python-3.13.13-amd64\\python.exe" -m pytest -n auto --html=reports/report.html'
+                bat "pip install -r requirements.txt"
             }
         }
 
         stage('Prepare Folders') {
             steps {
-                bat "if not exist reports mkdir reports"
-                bat "if not exist screenshots mkdir screenshots"
-                bat "if not exist downloads mkdir downloads"
+                bat "mkdir reports"
             }
         }
 
         stage('Run Tests') {
             steps {
-                // bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python311\\python.exe" -m pytest -n auto --html=reports/report.html'
-                bat '"C:\\Users\\Dell\\Downloads\\python-3.13.13-amd64\\python.exe" -m pytest -n auto --html=reports/report.html'
+                bat "pytest -n auto --html=reports/report.html"
             }
         }
     }
 
     post {
         always {
-            publishHTML(target: [
+            publishHTML([
                 reportDir: 'reports',
                 reportFiles: 'report.html',
-                reportName: 'Test Report',
-                keepAll: true,
-                alwaysLinkToLastBuild: true,
-                allowMissing: true
+                reportName: 'Test Report'
             ])
         }
     }
 }
+
+// pipeline {
+//     agent any
+
+//     stages {
+
+//         stage('Checkout Code') {
+//             steps {
+//                 checkout scm
+//             }
+//         }
+
+//         stage('Install Dependencies') {
+//             steps {
+//                 // bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python311\\python.exe" -m pip install -r requirements.txt'
+//                 bat '"C:\\Users\\Dell\\Downloads\\python-3.13.13-amd64\\python.exe" -m pytest -n auto --html=reports/report.html'
+//             }
+//         }
+
+//         stage('Prepare Folders') {
+//             steps {
+//                 bat "if not exist reports mkdir reports"
+//                 bat "if not exist screenshots mkdir screenshots"
+//                 bat "if not exist downloads mkdir downloads"
+//             }
+//         }
+
+//         stage('Run Tests') {
+//             steps {
+//                 // bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python311\\python.exe" -m pytest -n auto --html=reports/report.html'
+//                 bat '"C:\\Users\\Dell\\Downloads\\python-3.13.13-amd64\\python.exe" -m pytest -n auto --html=reports/report.html'
+//             }
+//         }
+//     }
+
+//     post {
+//         always {
+//             publishHTML(target: [
+//                 reportDir: 'reports',
+//                 reportFiles: 'report.html',
+//                 reportName: 'Test Report',
+//                 keepAll: true,
+//                 alwaysLinkToLastBuild: true,
+//                 allowMissing: true
+//             ])
+//         }
+//     }
+// }
 
 // pipeline {
 //     agent any
