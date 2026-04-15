@@ -9,9 +9,19 @@ pipeline {
             }
         }
 
+        // stage('Install Dependencies') {
+        //     steps {
+        //         bat "pip install -r requirements.txt"
+        //     }
+        // }
+
         stage('Install Dependencies') {
             steps {
-                bat "pip install -r requirements.txt"
+                bat """
+                python --version
+                python -m pip install --upgrade pip
+                python -m pip install -r requirements.txt
+                """
             }
         }
 
