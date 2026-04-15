@@ -5,7 +5,7 @@ from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from config.config import BASE_URL
 
-@pytest.mark.order(28)
+# @pytest.mark.order(28)
 @pytest.mark.smoke
 def test_delete_root_space(browser, test_data):
 

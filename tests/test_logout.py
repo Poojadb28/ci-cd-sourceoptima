@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from pages.login_page import LoginPage
 from config.config import BASE_URL
 
-@pytest.mark.order(34)
+# @pytest.mark.order(34)
 @pytest.mark.smoke
 def test_logout(browser, test_data):
 

@@ -5,7 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from pages.login_page import LoginPage
 from config.config import BASE_URL
 
-@pytest.mark.order(1)
+# @pytest.mark.order(1)
 @pytest.mark.smoke
 def test_system_admin_login(browser, test_data):
 

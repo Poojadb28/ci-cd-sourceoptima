@@ -7,7 +7,7 @@ from pages.projects_page import ProjectsPage
 from pages.design_review_play_page import DesignReviewPage
 from config.config import BASE_URL
 
-@pytest.mark.order(22)
+# @pytest.mark.order(22)
 @pytest.mark.regression
 def test_design_review_play(browser, test_data):
 

@@ -6,7 +6,7 @@ from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from config.config import BASE_URL
 
-@pytest.mark.order(15)
+# @pytest.mark.order(15)
 @pytest.mark.regression
 def test_edit_details(browser, test_data):
 

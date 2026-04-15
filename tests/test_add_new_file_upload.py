@@ -7,7 +7,7 @@ from pages.projects_page import ProjectsPage
 from config.config import BASE_URL
 
 
-@pytest.mark.order(14)
+# @pytest.mark.order(14)
 @pytest.mark.regression
 def test_upload_new_file(browser, test_data):
 

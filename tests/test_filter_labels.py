@@ -8,7 +8,7 @@ from pages.projects_page import ProjectsPage
 from utils.filter_utils import apply_filter, safe_clear_filter
 from config.config import BASE_URL
 
-@pytest.mark.order(17)
+# @pytest.mark.order(17)
 @pytest.mark.regression
 def test_filter_labels(browser, test_data):
 

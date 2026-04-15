@@ -8,7 +8,7 @@ from pages.projects_page import ProjectsPage
 from pages.drawing_checker_veeco_play_page import DrawingCheckerVeecoPage
 from config.config import BASE_URL
 
-@pytest.mark.order(25)
+# @pytest.mark.order(25)
 @pytest.mark.regression
 def test_drawing_checker_veeco_play(browser, test_data):
 

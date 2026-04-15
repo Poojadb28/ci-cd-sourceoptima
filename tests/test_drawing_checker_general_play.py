@@ -7,7 +7,7 @@ from pages.projects_page import ProjectsPage
 from pages.drawing_checker_general_play_page import DrawingCheckerGeneralPage
 from config.config import BASE_URL
 
-@pytest.mark.order(24)
+# @pytest.mark.order(24)
 @pytest.mark.regression
 def test_drawing_checker_general_play(browser, test_data):
 

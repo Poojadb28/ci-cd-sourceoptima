@@ -6,7 +6,7 @@ from pages.projects_page import ProjectsPage
 from pages.tariff_play_page import TariffPage
 from config.config import BASE_URL
 
-@pytest.mark.order(20)
+# @pytest.mark.order(20)
 @pytest.mark.regression
 def test_tariff_analysis_play(browser, test_data):
 

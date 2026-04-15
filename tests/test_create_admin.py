@@ -5,7 +5,7 @@ from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
-@pytest.mark.order(5)
+# @pytest.mark.order(5)
 @pytest.mark.smoke
 def test_create_admin(browser, test_data):
 

@@ -6,7 +6,7 @@ from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
-@pytest.mark.order(4)
+# @pytest.mark.order(4)
 @pytest.mark.smoke
 def test_create_user(browser, test_data):
 

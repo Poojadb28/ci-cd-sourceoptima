@@ -5,7 +5,7 @@ from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from config.config import BASE_URL
 
-@pytest.mark.order(19)
+# @pytest.mark.order(19)
 @pytest.mark.regression
 def test_select_and_deselect_all_button(browser, test_data):
 

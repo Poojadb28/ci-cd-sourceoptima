@@ -5,7 +5,7 @@ from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
-@pytest.mark.order(6)
+# @pytest.mark.order(6)
 @pytest.mark.regression
 def test_duplicate_create_user(browser, test_data):
 

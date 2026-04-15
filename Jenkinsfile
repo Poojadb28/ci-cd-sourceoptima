@@ -27,7 +27,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                bat "\"C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" -m pytest -n auto --html=reports/report.html"
+                bat "\"C:\\Users\\Dell\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" -m pytest tests/e2e/test_full_e2e_flow.py -v --html=reports/report.html"
             }
         }
     }

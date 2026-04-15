@@ -5,7 +5,7 @@ from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
-@pytest.mark.order(8)
+# @pytest.mark.order(8)
 @pytest.mark.regression
 def test_export_credit_history(browser, test_data):
 

@@ -6,7 +6,7 @@ from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from config.config import BASE_URL
 
-@pytest.mark.order(11)
+# @pytest.mark.order(11)
 @pytest.mark.smoke
 def test_add_sub_space(browser, test_data):
 

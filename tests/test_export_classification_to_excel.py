@@ -6,7 +6,7 @@ from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from config.config import BASE_URL
 
-@pytest.mark.order(16)
+# @pytest.mark.order(16)
 @pytest.mark.regression
 def test_export_classification_to_excel(browser, test_data):
 

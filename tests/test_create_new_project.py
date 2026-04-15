@@ -9,7 +9,7 @@ from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from config.config import BASE_URL
 
-@pytest.mark.order(12)
+# @pytest.mark.order(12)
 @pytest.mark.smoke
 def test_create_new_project(browser, test_data):
 

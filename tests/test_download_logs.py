@@ -7,7 +7,7 @@ from pages.login_page import LoginPage
 from pages.system_stats_page import SystemStatsPage
 from config.config import BASE_URL
 
-@pytest.mark.order(3)
+# @pytest.mark.order(3)
 @pytest.mark.regression
 def test_download_logs(browser, test_data):
 

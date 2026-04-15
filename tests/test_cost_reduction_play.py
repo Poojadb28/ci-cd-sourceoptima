@@ -6,7 +6,7 @@ from pages.projects_page import ProjectsPage
 from pages.cost_reduction_play_page import CostReductionPage
 from config.config import BASE_URL
 
-@pytest.mark.order(21)
+# @pytest.mark.order(21)
 @pytest.mark.regression
 def test_cost_reduction_play(browser, test_data):
 

@@ -5,7 +5,7 @@ from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from config.config import BASE_URL
 
-@pytest.mark.order(26)
+# @pytest.mark.order(26)
 @pytest.mark.smoke
 def test_delete_file(browser, test_data):
 

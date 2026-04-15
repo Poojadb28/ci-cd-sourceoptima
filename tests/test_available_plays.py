@@ -6,7 +6,7 @@ from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
-@pytest.mark.order(2)
+# @pytest.mark.order(2)
 @pytest.mark.regression
 def test_available_plays_enable_or_disable_actions(browser, test_data):
 
