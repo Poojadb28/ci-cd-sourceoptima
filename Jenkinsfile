@@ -11,7 +11,8 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python311\\python.exe" -m pip install -r requirements.txt'
+                // bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python311\\python.exe" -m pip install -r requirements.txt'
+                bat '"C:\\Users\\Dell\\Downloads\\python-3.13.13-amd64\\python.exe" -m pytest -n auto --html=reports/report.html'
             }
         }
 
@@ -25,7 +26,8 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python311\\python.exe" -m pytest -n auto --html=reports/report.html'
+                // bat '"C:\\Users\\pooja.db\\AppData\\Local\\Programs\\Python\\Python311\\python.exe" -m pytest -n auto --html=reports/report.html'
+                bat '"C:\\Users\\Dell\\Downloads\\python-3.13.13-amd64\\python.exe" -m pytest -n auto --html=reports/report.html'
             }
         }
     }
