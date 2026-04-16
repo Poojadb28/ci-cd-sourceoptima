@@ -173,7 +173,7 @@ class LoginPage:
 
     # ================= LOCATORS ================= #
 
-    USERNAME_INPUT = (By.ID, "username")
+    USERNAME_INPUT = (By.ID, "email")
     PASSWORD_INPUT = (By.ID, "password")
     LOGIN_BUTTON = (By.XPATH, "//button[@type='submit']")
     DASHBOARD_ELEMENT = (By.XPATH, "//div[contains(text(),'Dashboard')]")
@@ -200,40 +200,31 @@ class LoginPage:
 
     # ================= ACTIONS ================= #
 
-    # Open Application URL
     def open_url(self):
         self.driver.get(BASE_URL)
         self.wait_for_page_load()
 
-    # Enter Username
     def enter_username(self, username):
-        self.wait_for_page_load()
-
         element = self.wait.until(
             EC.element_to_be_clickable(self.USERNAME_INPUT)
         )
-
         element.clear()
         element.send_keys(username)
 
-    # Enter Password
     def enter_password(self, password):
         element = self.wait.until(
             EC.element_to_be_clickable(self.PASSWORD_INPUT)
         )
-
         element.clear()
         element.send_keys(password)
 
-    # Click Login
     def click_login(self):
         self.safe_click(self.LOGIN_BUTTON)
 
-    # Complete Login Action
     def login(self, username, password):
-        # Ensure login form is present before interacting
+        # Strong wait (FINAL FIX)
         self.wait.until(
-            EC.presence_of_element_located(self.USERNAME_INPUT)
+            EC.element_to_be_clickable(self.USERNAME_INPUT)
         )
 
         self.enter_username(username)
@@ -242,13 +233,11 @@ class LoginPage:
 
     # ================= VALIDATION ================= #
 
-    # Check Dashboard
     def is_dashboard_visible(self):
         return self.wait.until(
             EC.visibility_of_element_located(self.DASHBOARD_ELEMENT)
         ).is_displayed()
 
-    # Negative Scenario (Invalid Login)
     def get_error_message(self):
         return self.wait.until(
             EC.visibility_of_element_located(self.ERROR_MESSAGE)
