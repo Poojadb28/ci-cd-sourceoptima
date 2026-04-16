@@ -141,6 +141,9 @@ def test_full_e2e_flow(browser):
 
     browser.get(BASE_URL)
 
+    print("CURRENT URL:", browser.current_url)
+    print("PAGE TITLE:", browser.title)
+
     # ADD THIS BLOCK HERE
     WebDriverWait(browser, 30).until(
         lambda d: d.execute_script("return document.readyState") == "complete"
