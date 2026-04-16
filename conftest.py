@@ -65,57 +65,58 @@
 
 import pytest
 import os
-import logging
+import json
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from datetime import datetime
 
-# Project root
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Reports & downloads
-DOWNLOAD_DIR = os.path.join(BASE_DIR, "downloads")
-REPORT_DIR = os.path.join(BASE_DIR, "reports")
 
-os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-os.makedirs(REPORT_DIR, exist_ok=True)
+def pytest_addoption(parser):
+    parser.addoption("--browser", action="store", default="chrome")
 
-# Logging setup
-log_file = os.path.join(REPORT_DIR, f"test_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
-logging.basicConfig(
-    filename=log_file,
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
 
 @pytest.fixture(scope="session")
-def browser():
-    chrome_options = Options()
+def browser(request):
+    browser_name = request.config.getoption("browser")
 
-    # Jenkins safe options
-    chrome_options.add_argument("--headless=new")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--window-size=1920,1080")
+    if browser_name == "chrome":
+        chrome_options = Options()
 
-    # Download handling (VERY IMPORTANT FIX)
-    prefs = {
-        "download.default_directory": DOWNLOAD_DIR,
-        "download.prompt_for_download": False,
-        "download.directory_upgrade": True,
-        "safebrowsing.enabled": True,
-        "profile.default_content_settings.popups": 0
-    }
-    chrome_options.add_experimental_option("prefs", prefs)
+        # Jenkins safe options
+        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
 
-    driver = webdriver.Chrome(options=chrome_options)
+        #  Download handling (NO "Keep" issue)
+        download_dir = os.path.join(BASE_DIR, "downloads")
+        os.makedirs(download_dir, exist_ok=True)
+
+        prefs = {
+            "download.default_directory": download_dir,
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True
+        }
+
+        chrome_options.add_experimental_option("prefs", prefs)
+
+        driver = webdriver.Chrome(options=chrome_options)
+
+    else:
+        raise Exception(f"Unsupported browser: {browser_name}")
+
     driver.maximize_window()
-
-    logging.info("Browser started")
-
     yield driver
-
     driver.quit()
-    logging.info("Browser closed")
+
+
+@pytest.fixture(scope="session")
+def test_data():
+    file_path = os.path.join(BASE_DIR, "testdata", "login_data.json")
+
+    with open(file_path) as f:
+        data = json.load(f)
+
+    return data

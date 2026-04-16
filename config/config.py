@@ -17,10 +17,9 @@
 
 import os
 
-BASE_URL = "https://your-app-url.com"  # update if needed
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-TEST_DATA_PATH = os.path.join(BASE_DIR, "testdata", "testdata.json")
-FILES_PATH = os.path.join(BASE_DIR, "testdata", "files")
-DOWNLOAD_PATH = os.path.join(BASE_DIR, "downloads")
+BASE_URL = os.getenv("BASE_URL", "https://testing.sourceoptima.com/")
+
+DOWNLOAD_DIR = os.path.join(BASE_DIR, "downloads")
+TESTDATA_DIR = os.path.join(BASE_DIR, "testdata")

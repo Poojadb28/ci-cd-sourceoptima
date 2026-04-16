@@ -9,11 +9,16 @@
 #         return json.load(file)
 
 import json
-from config.config import TEST_DATA_PATH
+import os
 
-def load_test_data():
-    try:
-        with open(TEST_DATA_PATH, "r") as file:
-            return json.load(file)
-    except Exception as e:
-        raise Exception(f"Failed to load test data: {e}")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def load_test_data(filename):
+    file_path = os.path.join(BASE_DIR, "testdata", filename)
+
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Test data file not found: {file_path}")
+
+    with open(file_path, "r") as f:
+        return json.load(f)
