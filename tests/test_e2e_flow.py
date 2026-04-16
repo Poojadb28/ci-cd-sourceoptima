@@ -141,6 +141,11 @@ def test_full_e2e_flow(browser):
 
     browser.get(BASE_URL)
 
+    # ADD THIS BLOCK HERE
+    WebDriverWait(browser, 30).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
+
     # ================= LOAD DATA ================= #
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

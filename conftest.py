@@ -94,7 +94,9 @@ def browser():
     options = Options()
 
     # Headless toggle (default TRUE for Jenkins)
-    if os.getenv("HEADLESS", "true").lower() == "true":
+    # if os.getenv("HEADLESS", "true").lower() == "true":
+    #     options.add_argument("--headless=new")
+    if os.getenv("HEADLESS", "false").lower() == "true":
         options.add_argument("--headless=new")
 
     # Stability options (VERY IMPORTANT)

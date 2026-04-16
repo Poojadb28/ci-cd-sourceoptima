@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        HEADLESS = 'false'
+    }
+
     stages {
 
         stage('Checkout Code') {
