@@ -261,16 +261,31 @@ from pages.projects_page import ProjectsPage
 
 
 def switch_to_login_context(browser):
- 
     browser.switch_to.default_content()
 
-    # Try direct first
+    # STEP 1: CLICK LOGIN BUTTON (MANDATORY FIX)
+    try:
+        login_btn = WebDriverWait(browser, 10).until(
+            EC.element_to_be_clickable((
+                By.XPATH,
+                "//button[contains(.,'Login') or contains(.,'Sign') or contains(.,'Get Started')] | //a[contains(.,'Login') or contains(.,'Sign')]"
+            ))
+        )
+        login_btn.click()
+    except:
+        pass  # already on login page
+
+    # STEP 2: WAIT FOR UI RENDER
+    WebDriverWait(browser, 10).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
+
+    # STEP 3: CHECK DIRECT DOM
     if browser.find_elements(By.ID, "email"):
         return
 
-    # Try iframe
-    iframes = browser.find_elements(By.TAG_NAME, "iframe")
-    for frame in iframes:
+    # STEP 4: CHECK IFRAME
+    for frame in browser.find_elements(By.TAG_NAME, "iframe"):
         browser.switch_to.frame(frame)
         if browser.find_elements(By.ID, "email"):
             return
