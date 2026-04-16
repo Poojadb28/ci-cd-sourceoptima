@@ -1,154 +1,154 @@
-# import pytest
-# import os
-# from selenium.webdriver.support.ui import WebDriverWait
-
-# from pages.login_page import LoginPage
-# from pages.projects_page import ProjectsPage
-# from config.config import BASE_URL
-
-# # @pytest.mark.order(16)
-# @pytest.mark.regression
-# def test_export_classification_to_excel(browser, test_data):
-
-#     wait = WebDriverWait(browser, 30)
-
-#     browser.get(BASE_URL)
-
-#     email = test_data["logins"]["system_admin"]["email"]
-#     password = test_data["logins"]["system_admin"]["password"]
-
-#     login = LoginPage(browser)
-#     login.login(email, password)
-
-#     projects = ProjectsPage(browser)
-
-#     projects.open_projects()
-#     projects.open_root_space("TestSpace1")
-#     projects.open_project("TestFile")
-
-#     projects.click_export_classification()
-
-#     # Jenkins-safe download dir
-#     download_dir = os.path.abspath("downloads")
-#     os.makedirs(download_dir, exist_ok=True)
-
-#     wait.until(lambda d: projects.is_classification_downloaded(download_dir))
-
-#     assert projects.is_classification_downloaded(download_dir), \
-#         "Classification Excel file was not downloaded"
-
-import os
 import pytest
+import os
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-from config.config import BASE_URL, DOWNLOAD_PATH
 from pages.login_page import LoginPage
-from pages.system_admin_page import SystemAdminPage
 from pages.projects_page import ProjectsPage
-from pages.tariff_play_page import TariffPage
-from pages.cost_reduction_play_page import CostReductionPage
-from pages.design_review_play_page import DesignReviewPage
-from pages.drawing_checker_both_play_page import DrawingCheckerPage
-from pages.drawing_checker_general_play_page import DrawingCheckerGeneralPage
-from pages.drawing_checker_veeco_play_page import DrawingCheckerVeecoPage
+from config.config import BASE_URL
 
-
-@pytest.mark.smoke
-def test_full_e2e_flow(browser, test_data):
+# @pytest.mark.order(16)
+@pytest.mark.regression
+def test_export_classification_to_excel(browser, test_data):
 
     wait = WebDriverWait(browser, 30)
 
     browser.get(BASE_URL)
 
-    # ================= LOGIN =================
     email = test_data["logins"]["system_admin"]["email"]
     password = test_data["logins"]["system_admin"]["password"]
 
     login = LoginPage(browser)
     login.login(email, password)
 
-    # ================= INIT PAGES =================
-    admin = SystemAdminPage(browser)
-    project = ProjectsPage(browser)
+    projects = ProjectsPage(browser)
 
-    # ================= ADMIN ACTIONS =================
-    admin.open_user_admin()
+    projects.open_projects()
+    projects.open_root_space("TestSpace1")
+    projects.open_project("TestFile")
 
-    plays = [
-        "Tariff Analysis",
-        "Cost Reduction Analysis",
-        "Design Review",
-        "Drawing Checker - Both",
-        "Drawing Checker - General",
-        "Drawing Checker - Veeco"
-    ]
+    projects.click_export_classification()
 
-    for play in plays:
-        admin.toggle_play_by_name(play)
+    # Jenkins-safe download dir
+    download_dir = os.path.abspath("downloads")
+    os.makedirs(download_dir, exist_ok=True)
 
-    # ================= EXPORT CREDIT =================
-    admin.click_export_credit_history()
-    admin.wait_for_credit_history_download(DOWNLOAD_PATH)
+    wait.until(lambda d: projects.is_classification_downloaded(download_dir))
 
-    # ================= PROJECT FLOW =================
-    project.open_projects()
+    assert projects.is_classification_downloaded(download_dir), \
+        "Classification Excel file was not downloaded"
 
-    project.create_root_space("AutoRoot")
+# import os
+# import pytest
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support import expected_conditions as EC
 
-    project.open_root_space("AutoRoot")
+# from config.config import BASE_URL, DOWNLOAD_PATH
+# from pages.login_page import LoginPage
+# from pages.system_admin_page import SystemAdminPage
+# from pages.projects_page import ProjectsPage
+# from pages.tariff_play_page import TariffPage
+# from pages.cost_reduction_play_page import CostReductionPage
+# from pages.design_review_play_page import DesignReviewPage
+# from pages.drawing_checker_both_play_page import DrawingCheckerPage
+# from pages.drawing_checker_general_play_page import DrawingCheckerGeneralPage
+# from pages.drawing_checker_veeco_play_page import DrawingCheckerVeecoPage
 
-    project.create_project("AutoProject", os.path.abspath("testdata/sample.pdf"))
 
-    project.open_project("AutoProject")
+# @pytest.mark.smoke
+# def test_full_e2e_flow(browser, test_data):
 
-    project.select_all_files()
+#     wait = WebDriverWait(browser, 30)
 
-    # ================= PLAY EXECUTIONS =================
+#     browser.get(BASE_URL)
 
-    # ---------- TARIFF ----------
-    tariff = TariffPage(browser)
-    tariff.run_tariff()
-    tariff.export(DOWNLOAD_PATH)
+#     # ================= LOGIN =================
+#     email = test_data["logins"]["system_admin"]["email"]
+#     password = test_data["logins"]["system_admin"]["password"]
 
-    # ---------- COST REDUCTION ----------
-    cost = CostReductionPage(browser)
-    cost.select_cost_reduction()
-    cost.click_run()
-    cost.wait_for_processing()
+#     login = LoginPage(browser)
+#     login.login(email, password)
 
-    # ---------- DESIGN REVIEW ----------
-    design = DesignReviewPage(browser)
-    design.select_design_review()
-    design.click_run()
-    design.wait_for_processing()
-    design.download_report(DOWNLOAD_PATH)
+#     # ================= INIT PAGES =================
+#     admin = SystemAdminPage(browser)
+#     project = ProjectsPage(browser)
 
-    # ---------- DRAWING CHECKER BOTH ----------
-    drawing = DrawingCheckerPage(browser)
-    drawing.select_drawing_checker()
-    drawing.click_run()
-    drawing.wait_for_processing()
-    drawing.download_report(DOWNLOAD_PATH)
+#     # ================= ADMIN ACTIONS =================
+#     admin.open_user_admin()
 
-    # ---------- DRAWING CHECKER GENERAL ----------
-    general = DrawingCheckerGeneralPage(browser)
-    general.select_play()
-    general.click_run()
-    general.wait_for_processing()
-    general.download_report(DOWNLOAD_PATH)
+#     plays = [
+#         "Tariff Analysis",
+#         "Cost Reduction Analysis",
+#         "Design Review",
+#         "Drawing Checker - Both",
+#         "Drawing Checker - General",
+#         "Drawing Checker - Veeco"
+#     ]
 
-    # ---------- DRAWING CHECKER VEECO ----------
-    veeco = DrawingCheckerVeecoPage(browser)
-    veeco.select_play()
-    veeco.click_run()
-    veeco.wait_for_processing()
-    veeco.download_report(DOWNLOAD_PATH)
+#     for play in plays:
+#         admin.toggle_play_by_name(play)
 
-    # ================= SEARCH & FILTER =================
-    project.search_file("AutoProject")
-    project.select_all_files()
-    project.deselect_all_files()
+#     # ================= EXPORT CREDIT =================
+#     admin.click_export_credit_history()
+#     admin.wait_for_credit_history_download(DOWNLOAD_PATH)
 
-    # ================= FINAL ASSERT =================
-    assert True
+#     # ================= PROJECT FLOW =================
+#     project.open_projects()
+
+#     project.create_root_space("AutoRoot")
+
+#     project.open_root_space("AutoRoot")
+
+#     project.create_project("AutoProject", os.path.abspath("testdata/sample.pdf"))
+
+#     project.open_project("AutoProject")
+
+#     project.select_all_files()
+
+#     # ================= PLAY EXECUTIONS =================
+
+#     # ---------- TARIFF ----------
+#     tariff = TariffPage(browser)
+#     tariff.run_tariff()
+#     tariff.export(DOWNLOAD_PATH)
+
+#     # ---------- COST REDUCTION ----------
+#     cost = CostReductionPage(browser)
+#     cost.select_cost_reduction()
+#     cost.click_run()
+#     cost.wait_for_processing()
+
+#     # ---------- DESIGN REVIEW ----------
+#     design = DesignReviewPage(browser)
+#     design.select_design_review()
+#     design.click_run()
+#     design.wait_for_processing()
+#     design.download_report(DOWNLOAD_PATH)
+
+#     # ---------- DRAWING CHECKER BOTH ----------
+#     drawing = DrawingCheckerPage(browser)
+#     drawing.select_drawing_checker()
+#     drawing.click_run()
+#     drawing.wait_for_processing()
+#     drawing.download_report(DOWNLOAD_PATH)
+
+#     # ---------- DRAWING CHECKER GENERAL ----------
+#     general = DrawingCheckerGeneralPage(browser)
+#     general.select_play()
+#     general.click_run()
+#     general.wait_for_processing()
+#     general.download_report(DOWNLOAD_PATH)
+
+#     # ---------- DRAWING CHECKER VEECO ----------
+#     veeco = DrawingCheckerVeecoPage(browser)
+#     veeco.select_play()
+#     veeco.click_run()
+#     veeco.wait_for_processing()
+#     veeco.download_report(DOWNLOAD_PATH)
+
+#     # ================= SEARCH & FILTER =================
+#     project.search_file("AutoProject")
+#     project.select_all_files()
+#     project.deselect_all_files()
+
+#     # ================= FINAL ASSERT =================
+#     assert True

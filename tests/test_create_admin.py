@@ -1,67 +1,67 @@
-# import pytest
-# from selenium.webdriver.support.ui import WebDriverWait
-
-# from pages.login_page import LoginPage
-# from pages.system_admin_page import SystemAdminPage
-# from config.config import BASE_URL
-
-# # @pytest.mark.order(5)
-# @pytest.mark.smoke
-# def test_create_admin(browser, test_data):
-
-#     wait = WebDriverWait(browser, 20)
-
-#     browser.get(BASE_URL)
-
-#     login_data = test_data["system_admin_login"]
-#     user_data = test_data["create_admin_user"]
-
-#     login = LoginPage(browser)
-#     login.login(login_data["email"], login_data["password"])
-
-#     admin = SystemAdminPage(browser)
-
-#     admin.open_user_admin()
-#     admin.click_create_user()
-
-#     admin.fill_user_details(
-#         user_data["full_name"],
-#         user_data["email"],
-#         user_data["password"],
-#         user_data["role"]   
-#     )
-
-#     admin.submit_user()
-
-#     wait.until(lambda d: "success" in admin.get_success_message().lower())
-
-#     success_msg = admin.get_success_message()
-
-#     assert success_msg == "User created successfully"
-
 import pytest
+from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
-
+# @pytest.mark.order(5)
 @pytest.mark.smoke
 def test_create_admin(browser, test_data):
+
+    wait = WebDriverWait(browser, 20)
 
     browser.get(BASE_URL)
 
     login_data = test_data["system_admin_login"]
     user_data = test_data["create_admin_user"]
 
-    LoginPage(browser).login(login_data["email"], login_data["password"])
+    login = LoginPage(browser)
+    login.login(login_data["email"], login_data["password"])
 
     admin = SystemAdminPage(browser)
 
-    admin.create_user(
+    admin.open_user_admin()
+    admin.click_create_user()
+
+    admin.fill_user_details(
         user_data["full_name"],
         user_data["email"],
-        user_data["password"]
+        user_data["password"],
+        user_data["role"]   
     )
 
-    assert True
+    admin.submit_user()
+
+    wait.until(lambda d: "success" in admin.get_success_message().lower())
+
+    success_msg = admin.get_success_message()
+
+    assert success_msg == "User created successfully"
+
+# import pytest
+
+# from pages.login_page import LoginPage
+# from pages.system_admin_page import SystemAdminPage
+# from config.config import BASE_URL
+
+
+# @pytest.mark.smoke
+# def test_create_admin(browser, test_data):
+
+#     browser.get(BASE_URL)
+
+#     login_data = test_data["system_admin_login"]
+#     user_data = test_data["create_admin_user"]
+
+#     LoginPage(browser).login(login_data["email"], login_data["password"])
+
+#     admin = SystemAdminPage(browser)
+
+#     admin.create_user(
+#         user_data["full_name"],
+#         user_data["email"],
+#         user_data["password"]
+#     )
+
+#     assert True

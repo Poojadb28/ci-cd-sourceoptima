@@ -1,68 +1,14 @@
-# import pytest
-# import os
-
-# from pages.login_page import LoginPage
-# from pages.projects_page import ProjectsPage
-# from pages.tariff_play_page import TariffPage
-# from config.config import BASE_URL
-
-# # @pytest.mark.order(20)
-# @pytest.mark.regression
-# def test_tariff_analysis_play(browser, test_data):
-
-#     browser.get(BASE_URL)
-
-#     email = test_data["logins"]["system_admin"]["email"]
-#     password = test_data["logins"]["system_admin"]["password"]
-
-#     # Jenkins-safe download directory
-#     download_dir = os.path.abspath("downloads")
-#     os.makedirs(download_dir, exist_ok=True)
-
-#     login = LoginPage(browser)
-#     project = ProjectsPage(browser)
-#     tariff = TariffPage(browser)
-
-#     # ---------------- FLOW ----------------
-
-#     login.login(email, password)
-
-#     project.open_projects()
-#     project.open_root_space("TestSpace_1")
-#     project.open_project("TestFile")
-#     project.select_all_files()
-
-#     tariff.select_tariff_analysis()
-#     tariff.treat_as_assembly()
-#     tariff.set_top_level()
-#     tariff.run_tariff_analysis()
-
-#     # Export BOM
-#     tariff.export_bom(download_dir)
-
-#     # Approve BOM
-#     tariff.approve_bom()
-
-#     # Export Tariff
-#     tariff.export_tariff(download_dir)
-
-#     # Go Back
-#     tariff.go_back()
-
 import pytest
 import os
-from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.login_page import LoginPage
 from pages.projects_page import ProjectsPage
 from pages.tariff_play_page import TariffPage
 from config.config import BASE_URL
 
-
+# @pytest.mark.order(20)
 @pytest.mark.regression
 def test_tariff_analysis_play(browser, test_data):
-
-    wait = WebDriverWait(browser, 30)
 
     browser.get(BASE_URL)
 
@@ -77,30 +23,84 @@ def test_tariff_analysis_play(browser, test_data):
     project = ProjectsPage(browser)
     tariff = TariffPage(browser)
 
-    # LOGIN
+    # ---------------- FLOW ----------------
+
     login.login(email, password)
 
-    # PROJECT NAVIGATION
     project.open_projects()
     project.open_root_space("TestSpace_1")
     project.open_project("TestFile")
-
-    wait.until(lambda d: project.is_project_loaded())
-
     project.select_all_files()
 
-    # TARIFF FLOW
     tariff.select_tariff_analysis()
     tariff.treat_as_assembly()
     tariff.set_top_level()
     tariff.run_tariff_analysis()
 
-    # EXPORTS
+    # Export BOM
     tariff.export_bom(download_dir)
+
+    # Approve BOM
     tariff.approve_bom()
+
+    # Export Tariff
     tariff.export_tariff(download_dir)
 
-    # BACK
+    # Go Back
     tariff.go_back()
 
-    assert True
+# import pytest
+# import os
+# from selenium.webdriver.support.ui import WebDriverWait
+
+# from pages.login_page import LoginPage
+# from pages.projects_page import ProjectsPage
+# from pages.tariff_play_page import TariffPage
+# from config.config import BASE_URL
+
+
+# @pytest.mark.regression
+# def test_tariff_analysis_play(browser, test_data):
+
+#     wait = WebDriverWait(browser, 30)
+
+#     browser.get(BASE_URL)
+
+#     email = test_data["logins"]["system_admin"]["email"]
+#     password = test_data["logins"]["system_admin"]["password"]
+
+#     # Jenkins-safe download directory
+#     download_dir = os.path.abspath("downloads")
+#     os.makedirs(download_dir, exist_ok=True)
+
+#     login = LoginPage(browser)
+#     project = ProjectsPage(browser)
+#     tariff = TariffPage(browser)
+
+#     # LOGIN
+#     login.login(email, password)
+
+#     # PROJECT NAVIGATION
+#     project.open_projects()
+#     project.open_root_space("TestSpace_1")
+#     project.open_project("TestFile")
+
+#     wait.until(lambda d: project.is_project_loaded())
+
+#     project.select_all_files()
+
+#     # TARIFF FLOW
+#     tariff.select_tariff_analysis()
+#     tariff.treat_as_assembly()
+#     tariff.set_top_level()
+#     tariff.run_tariff_analysis()
+
+#     # EXPORTS
+#     tariff.export_bom(download_dir)
+#     tariff.approve_bom()
+#     tariff.export_tariff(download_dir)
+
+#     # BACK
+#     tariff.go_back()
+
+#     assert True
