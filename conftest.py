@@ -66,16 +66,23 @@
 import pytest
 import os
 import json
+import sys
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+#  Base setup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(BASE_DIR)
 
 
 def pytest_addoption(parser):
     parser.addoption("--browser", action="store", default="chrome")
 
 
+# =========================
+#  BROWSER FIXTURE
+# =========================
 @pytest.fixture(scope="session")
 def browser(request):
     browser_name = request.config.getoption("browser")
@@ -88,8 +95,9 @@ def browser(request):
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--window-size=1920,1080")
 
-        #  Download handling (NO "Keep" issue)
+        # Download handling
         download_dir = os.path.join(BASE_DIR, "downloads")
         os.makedirs(download_dir, exist_ok=True)
 
@@ -112,9 +120,21 @@ def browser(request):
     driver.quit()
 
 
+# =========================
+# TEST DATA FIX (FINAL)
+# =========================
 @pytest.fixture(scope="session")
 def test_data():
-    file_path = os.path.join(BASE_DIR, "testdata", "login_data.json")
+    file_path = os.path.join(BASE_DIR, "testdata", "testdata.json")
+
+    # fallback for Jenkins
+    if not os.path.exists(file_path):
+        file_path = os.path.join(os.getcwd(), "testdata", "testdata.json")
+
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(
+            f"testdata.json NOT FOUND.\nChecked:\n{file_path}"
+        )
 
     with open(file_path) as f:
         data = json.load(f)
