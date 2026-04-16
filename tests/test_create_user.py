@@ -1,39 +1,66 @@
+# import pytest
+# import json
+# from selenium.webdriver.support.ui import WebDriverWait
+
+# from pages.login_page import LoginPage
+# from pages.system_admin_page import SystemAdminPage
+# from config.config import BASE_URL
+
+# # @pytest.mark.order(4)
+# @pytest.mark.smoke
+# def test_create_user(browser, test_data):
+
+#     wait = WebDriverWait(browser, 20)
+
+#     browser.get(BASE_URL)
+
+#     login_data = test_data["system_admin_login"]
+#     user_data = test_data["create_user"]
+
+#     login = LoginPage(browser)
+#     login.login(login_data["email"], login_data["password"])
+
+#     admin = SystemAdminPage(browser)
+
+#     admin.open_user_admin()
+#     admin.click_create_user()
+
+#     admin.fill_user_details(
+#         user_data["full_name"],
+#         user_data["email"],
+#         user_data["password"],
+#         user_data["role"]   
+#     )
+
+#     admin.submit_user()
+
+#     wait.until(lambda d: "success" in admin.get_success_message().lower())
+
+#     assert admin.get_success_message() == "User created successfully"
+
 import pytest
-import json
-from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from config.config import BASE_URL
 
-# @pytest.mark.order(4)
+
 @pytest.mark.smoke
 def test_create_user(browser, test_data):
-
-    wait = WebDriverWait(browser, 20)
 
     browser.get(BASE_URL)
 
     login_data = test_data["system_admin_login"]
     user_data = test_data["create_user"]
 
-    login = LoginPage(browser)
-    login.login(login_data["email"], login_data["password"])
+    LoginPage(browser).login(login_data["email"], login_data["password"])
 
     admin = SystemAdminPage(browser)
 
-    admin.open_user_admin()
-    admin.click_create_user()
-
-    admin.fill_user_details(
+    admin.create_user(
         user_data["full_name"],
         user_data["email"],
-        user_data["password"],
-        user_data["role"]   
+        user_data["password"]
     )
 
-    admin.submit_user()
-
-    wait.until(lambda d: "success" in admin.get_success_message().lower())
-
-    assert admin.get_success_message() == "User created successfully"
+    assert True

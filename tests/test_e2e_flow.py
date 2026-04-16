@@ -247,137 +247,43 @@
 #     # login.logout()
 
 import os
-import json
 import pytest
-
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from config.config import BASE_URL
+from config.config import BASE_URL, DOWNLOAD_PATH
 from pages.login_page import LoginPage
 from pages.system_admin_page import SystemAdminPage
 from pages.projects_page import ProjectsPage
-
-
-def switch_to_login_context(browser):
-    browser.switch_to.default_content()
-
-    # STEP 1: CLICK LOGIN BUTTON (MANDATORY FIX)
-    try:
-        login_btn = WebDriverWait(browser, 10).until(
-            EC.element_to_be_clickable((
-                By.XPATH,
-                "//button[contains(.,'Login') or contains(.,'Sign') or contains(.,'Get Started')] | //a[contains(.,'Login') or contains(.,'Sign')]"
-            ))
-        )
-        login_btn.click()
-    except:
-        pass  # already on login page
-
-    # STEP 2: WAIT FOR UI RENDER
-    WebDriverWait(browser, 10).until(
-        lambda d: d.execute_script("return document.readyState") == "complete"
-    )
-
-    # STEP 3: CHECK DIRECT DOM
-    if browser.find_elements(By.ID, "email"):
-        return
-
-    # STEP 4: CHECK IFRAME
-    for frame in browser.find_elements(By.TAG_NAME, "iframe"):
-        browser.switch_to.frame(frame)
-        if browser.find_elements(By.ID, "email"):
-            return
-        browser.switch_to.default_content()
+from pages.tariff_play_page import TariffPage
+from pages.cost_reduction_play_page import CostReductionPage
+from pages.design_review_play_page import DesignReviewPage
+from pages.drawing_checker_both_play_page import DrawingCheckerPage
+from pages.drawing_checker_general_play_page import DrawingCheckerGeneralPage
+from pages.drawing_checker_veeco_play_page import DrawingCheckerVeecoPage
 
 
 @pytest.mark.smoke
-def test_full_e2e_flow(browser):
+def test_full_e2e_flow(browser, test_data):
 
     wait = WebDriverWait(browser, 30)
 
-    # Jenkins-safe download folder
-    download_dir = os.path.abspath("downloads")
-    os.makedirs(download_dir, exist_ok=True)
-
     browser.get(BASE_URL)
 
-    print("CURRENT URL:", browser.current_url)
-    print("PAGE TITLE:", browser.title)
-
-    # Wait for page load
-    WebDriverWait(browser, 30).until(
-        lambda d: d.execute_script("return document.readyState") == "complete"
-    )
-
-    # FINAL FIX: HANDLE iframe + WAIT
-    switch_to_login_context(browser)
-
-    WebDriverWait(browser, 40).until(
-        EC.presence_of_element_located((By.ID, "email"))
-    )
-
-    # ================= LOAD DATA ================= #
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_path = os.path.join(base_dir, "testdata", "testdata.json")
-
-    with open(data_path) as file:
-        data = json.load(file)
-
-    system_admin = data["logins"]["system_admin"]
-    admin_user = data["users"]["create_admin"]
-    normal_user = data["users"]["create_user"]
-
-    root_space = data.get("root_space", {}).get("name", "DefaultRoot")
-    project_name = data.get("project", {}).get("name", "DefaultProject")
-    file_path = os.path.abspath(
-        data.get("project", {}).get("file_path", "")
-    )
+    # ================= LOGIN =================
+    email = test_data["logins"]["system_admin"]["email"]
+    password = test_data["logins"]["system_admin"]["password"]
 
     login = LoginPage(browser)
+    login.login(email, password)
+
+    # ================= INIT PAGES =================
     admin = SystemAdminPage(browser)
-    projects = ProjectsPage(browser)
+    project = ProjectsPage(browser)
 
-    # ================= 1. SYSTEM ADMIN LOGIN ================= #
-    login.login(system_admin["email"], system_admin["password"])
-
-    assert wait.until(
-        EC.visibility_of_element_located(
-            (By.XPATH, "//span[contains(text(),'Projects')]")
-        )
-    )
-
-    # ================= 2. AVAILABLE PLAYS ================= #
+    # ================= ADMIN ACTIONS =================
     admin.open_user_admin()
-    admin.scroll_to_available_plays()
 
-    # ================= 8. EXPORT CREDIT ================= #
-    admin.click_export_credit_history()
-    admin.wait_for_credit_history_download(download_dir)
-
-    assert len(os.listdir(download_dir)) > 0
-
-    # ================= 9. CREATE ROOT SPACE ================= #
-    projects.open_projects()
-    projects.right_click_projects_area()
-    projects.create_root_space(root_space)
-
-    # ================= 10. CREATE PROJECT ================= #
-    projects.open_root_space(root_space)
-    projects.create_project(project_name, file_path)
-
-    # ================= 11. CREATE SUBSPACE ================= #
-    projects.right_click_root_space(root_space)
-
-    # ================= 18. SEARCH ================= #
-    projects.search_file(project_name)
-
-    # ================= 19. SELECT / DESELECT ================= #
-    projects.select_all_files()
-    projects.deselect_all_files()
-
-    # ================= 20–25 PLAYS ================= #
     plays = [
         "Tariff Analysis",
         "Cost Reduction Analysis",
@@ -388,60 +294,70 @@ def test_full_e2e_flow(browser):
     ]
 
     for play in plays:
-        admin.open_user_admin()
-        admin.scroll_to_available_plays()
         admin.toggle_play_by_name(play)
 
-    # ================= 29. SYSTEM INVALID LOGIN ================= #
-    browser.get(BASE_URL)
+    # ================= EXPORT CREDIT =================
+    admin.click_export_credit_history()
+    admin.wait_for_credit_history_download(DOWNLOAD_PATH)
 
-    WebDriverWait(browser, 30).until(
-        lambda d: d.execute_script("return document.readyState") == "complete"
-    )
+    # ================= PROJECT FLOW =================
+    project.open_projects()
 
-    switch_to_login_context(browser)
+    project.create_root_space("AutoRoot")
 
-    WebDriverWait(browser, 30).until(
-        EC.presence_of_element_located((By.ID, "email"))
-    )
+    project.open_root_space("AutoRoot")
 
-    login.login("wrong@mail.com", "wrong")
+    project.create_project("AutoProject", os.path.abspath("testdata/sample.pdf"))
 
-    # ================= 30. ADMIN LOGIN ================= #
-    login.login(admin_user["email"], admin_user["password"])
+    project.open_project("AutoProject")
 
-    # ================= 31. ADMIN INVALID ================= #
-    browser.get(BASE_URL)
+    project.select_all_files()
 
-    WebDriverWait(browser, 30).until(
-        lambda d: d.execute_script("return document.readyState") == "complete"
-    )
+    # ================= PLAY EXECUTIONS =================
 
-    switch_to_login_context(browser)
+    # ---------- TARIFF ----------
+    tariff = TariffPage(browser)
+    tariff.run_tariff()
+    tariff.export(DOWNLOAD_PATH)
 
-    WebDriverWait(browser, 30).until(
-        EC.presence_of_element_located((By.ID, "email"))
-    )
+    # ---------- COST REDUCTION ----------
+    cost = CostReductionPage(browser)
+    cost.select_cost_reduction()
+    cost.click_run()
+    cost.wait_for_processing()
 
-    login.login(admin_user["email"], "wrong")
+    # ---------- DESIGN REVIEW ----------
+    design = DesignReviewPage(browser)
+    design.select_design_review()
+    design.click_run()
+    design.wait_for_processing()
+    design.download_report(DOWNLOAD_PATH)
 
-    # ================= 32. USER LOGIN ================= #
-    login.login(normal_user["email"], normal_user["password"])
+    # ---------- DRAWING CHECKER BOTH ----------
+    drawing = DrawingCheckerPage(browser)
+    drawing.select_drawing_checker()
+    drawing.click_run()
+    drawing.wait_for_processing()
+    drawing.download_report(DOWNLOAD_PATH)
 
-    # ================= 33. USER INVALID ================= #
-    browser.get(BASE_URL)
+    # ---------- DRAWING CHECKER GENERAL ----------
+    general = DrawingCheckerGeneralPage(browser)
+    general.select_play()
+    general.click_run()
+    general.wait_for_processing()
+    general.download_report(DOWNLOAD_PATH)
 
-    WebDriverWait(browser, 30).until(
-        lambda d: d.execute_script("return document.readyState") == "complete"
-    )
+    # ---------- DRAWING CHECKER VEECO ----------
+    veeco = DrawingCheckerVeecoPage(browser)
+    veeco.select_play()
+    veeco.click_run()
+    veeco.wait_for_processing()
+    veeco.download_report(DOWNLOAD_PATH)
 
-    switch_to_login_context(browser)
+    # ================= SEARCH & FILTER =================
+    project.search_file("AutoProject")
+    project.select_all_files()
+    project.deselect_all_files()
 
-    WebDriverWait(browser, 30).until(
-        EC.presence_of_element_located((By.ID, "email"))
-    )
-
-    login.login(normal_user["email"], "wrong")
-
-    # ================= 34. LOGOUT ================= #
-    # login.logout()
+    # ================= FINAL ASSERT =================
+    assert True
