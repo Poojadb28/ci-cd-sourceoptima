@@ -260,6 +260,23 @@ from pages.system_admin_page import SystemAdminPage
 from pages.projects_page import ProjectsPage
 
 
+def switch_to_login_context(browser):
+ 
+    browser.switch_to.default_content()
+
+    # Try direct first
+    if browser.find_elements(By.ID, "email"):
+        return
+
+    # Try iframe
+    iframes = browser.find_elements(By.TAG_NAME, "iframe")
+    for frame in iframes:
+        browser.switch_to.frame(frame)
+        if browser.find_elements(By.ID, "email"):
+            return
+        browser.switch_to.default_content()
+
+
 @pytest.mark.smoke
 def test_full_e2e_flow(browser):
 
@@ -274,12 +291,14 @@ def test_full_e2e_flow(browser):
     print("CURRENT URL:", browser.current_url)
     print("PAGE TITLE:", browser.title)
 
-    # WAIT FOR FULL PAGE LOAD
+    # Wait for page load
     WebDriverWait(browser, 30).until(
         lambda d: d.execute_script("return document.readyState") == "complete"
     )
 
-    # FINAL FIX: WAIT FOR LOGIN FIELD (CRITICAL)
+    # FINAL FIX: HANDLE iframe + WAIT
+    switch_to_login_context(browser)
+
     WebDriverWait(browser, 40).until(
         EC.presence_of_element_located((By.ID, "email"))
     )
@@ -362,6 +381,12 @@ def test_full_e2e_flow(browser):
     browser.get(BASE_URL)
 
     WebDriverWait(browser, 30).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
+
+    switch_to_login_context(browser)
+
+    WebDriverWait(browser, 30).until(
         EC.presence_of_element_located((By.ID, "email"))
     )
 
@@ -374,6 +399,12 @@ def test_full_e2e_flow(browser):
     browser.get(BASE_URL)
 
     WebDriverWait(browser, 30).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
+
+    switch_to_login_context(browser)
+
+    WebDriverWait(browser, 30).until(
         EC.presence_of_element_located((By.ID, "email"))
     )
 
@@ -384,6 +415,12 @@ def test_full_e2e_flow(browser):
 
     # ================= 33. USER INVALID ================= #
     browser.get(BASE_URL)
+
+    WebDriverWait(browser, 30).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
+
+    switch_to_login_context(browser)
 
     WebDriverWait(browser, 30).until(
         EC.presence_of_element_located((By.ID, "email"))
