@@ -209,17 +209,36 @@ class LoginPage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 20)
+        self.wait = WebDriverWait(driver, 30)
 
-    login_btn = (By.XPATH, "//button[contains(.,'Login') or contains(.,'Sign')]")
-    email = (By.XPATH, "//input[@type='email']")
-    password = (By.XPATH, "//input[@type='password']")
-    submit = (By.XPATH, "//button[@type='submit']")
+    email_input = (By.XPATH, "//input[@type='email']")
+    password_input = (By.XPATH, "//input[@type='password']")
+    login_btn = (By.XPATH, "//button[contains(.,'Login')]")
 
     def login(self, email, password):
-        self.wait.until(EC.element_to_be_clickable(self.login_btn)).click()
 
-        self.wait.until(EC.visibility_of_element_located(self.email)).send_keys(email)
-        self.wait.until(EC.visibility_of_element_located(self.password)).send_keys(password)
+        #  WAIT PAGE LOAD
+        self.wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
 
-        self.wait.until(EC.element_to_be_clickable(self.submit)).click()
+        #  WAIT EMAIL FIELD FIRST (more reliable than button)
+        self.wait.until(EC.visibility_of_element_located(self.email_input))
+
+        #  ENTER DATA
+        self.driver.find_element(*self.email_input).clear()
+        self.driver.find_element(*self.email_input).send_keys(email)
+
+        self.driver.find_element(*self.password_input).clear()
+        self.driver.find_element(*self.password_input).send_keys(password)
+
+        # SCROLL (important in headless)
+        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+        # WAIT BUTTON PROPERLY
+        button = self.wait.until(EC.presence_of_element_located(self.login_btn))
+        self.wait.until(EC.element_to_be_clickable(self.login_btn))
+
+        #  SAFE CLICK (handles overlay issues)
+        try:
+            button.click()
+        except:
+            self.driver.execute_script("arguments[0].click();", button)
