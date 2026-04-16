@@ -207,38 +207,83 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class LoginPage:
 
+    # LOCATORS
+    login_button = (By.XPATH, "//a[normalize-space()='Login']")
+    email_field = (By.ID, "email")
+    password_field = (By.ID, "password")
+    submit_button = (By.XPATH, "//button[normalize-space()='Submit']")
+    error_message = (By.XPATH, "//div[text()='Error during login. Please try again.']")
+    logout_button = (By.XPATH, "//button[normalize-space()='Logout']")
+
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 30)
+        self.wait = WebDriverWait(driver, 60)
 
-    email_input = (By.XPATH, "//input[@type='email']")
-    password_input = (By.XPATH, "//input[@type='password']")
-    login_btn = (By.XPATH, "//button[contains(.,'Login')]")
+    # ===============================
+    #  SAFE CLICK METHOD (IMPORTANT)
+    # ===============================
+    def safe_click(self, locator):
+        element = self.wait.until(EC.presence_of_element_located(locator))
+        self.wait.until(EC.element_to_be_clickable(locator))
+        try:
+            element.click()
+        except:
+            self.driver.execute_script("arguments[0].click();", element)
 
+    # ===============================
+    # LOGIN METHODS
+    # ===============================
+    def click_login_button(self):
+        self.safe_click(self.login_button)
+
+    def enter_email(self, email):
+        element = self.wait.until(EC.visibility_of_element_located(self.email_field))
+        element.clear()
+        element.send_keys(email)
+
+    def enter_password(self, password):
+        element = self.wait.until(EC.visibility_of_element_located(self.password_field))
+        element.clear()
+        element.send_keys(password)
+
+    def click_submit(self):
+        self.safe_click(self.submit_button)
+
+    # ===============================
+    #  COMPLETE LOGIN FLOW (FIXED)
+    # ===============================
     def login(self, email, password):
 
-        #  WAIT PAGE LOAD
+        #  Wait page load
         self.wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
 
-        #  WAIT EMAIL FIELD FIRST (more reliable than button)
-        self.wait.until(EC.visibility_of_element_located(self.email_input))
-
-        #  ENTER DATA
-        self.driver.find_element(*self.email_input).clear()
-        self.driver.find_element(*self.email_input).send_keys(email)
-
-        self.driver.find_element(*self.password_input).clear()
-        self.driver.find_element(*self.password_input).send_keys(password)
-
-        # SCROLL (important in headless)
-        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
-        # WAIT BUTTON PROPERLY
-        button = self.wait.until(EC.presence_of_element_located(self.login_btn))
-        self.wait.until(EC.element_to_be_clickable(self.login_btn))
-
-        #  SAFE CLICK (handles overlay issues)
+        # Click login (if required)
         try:
-            button.click()
+            self.click_login_button()
         except:
-            self.driver.execute_script("arguments[0].click();", button)
+            pass
+
+        # Handle iframe (CRITICAL for your app)
+        iframes = self.driver.find_elements(By.TAG_NAME, "iframe")
+        if iframes:
+            self.driver.switch_to.frame(iframes[0])
+
+        # Enter credentials
+        self.enter_email(email)
+        self.enter_password(password)
+
+
+        #  Submit
+        self.click_submit()
+
+        # Switch back
+        self.driver.switch_to.default_content()
+
+    # ===============================
+    # VALIDATION
+    # ===============================
+    def get_error_message(self):
+        return self.wait.until(EC.visibility_of_element_located(self.error_message)).text
+
+    def logout(self):
+        self.safe_click(self.logout_button)
