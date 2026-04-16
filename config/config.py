@@ -21,8 +21,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 BASE_URL = os.getenv("BASE_URL", "https://testing.sourceoptima.com/")
 
-#  FIX: keep BOTH names for compatibility
+# Downloads
 DOWNLOAD_DIR = os.path.join(BASE_DIR, "downloads")
-DOWNLOAD_PATH = DOWNLOAD_DIR   
+DOWNLOAD_PATH = DOWNLOAD_DIR  
 
+#  Test data
 TESTDATA_DIR = os.path.join(BASE_DIR, "testdata")
+
+# Global timeout 
+TIMEOUT = int(os.getenv("TIMEOUT", 20))
