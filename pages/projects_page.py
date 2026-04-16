@@ -280,37 +280,45 @@ class ProjectsPage:
 
     def create_root_space(self, name):
 
+        # STEP 1: RIGHT CLICK (MANDATORY)
+        self.right_click_projects_area()
+
+        # STEP 2: CLICK NEW ROOT SPACE
         self.click_new_root_space()
 
-        field = self.wait.until(EC.visibility_of_element_located(self.space_name_field))
+        # STEP 3: ENTER NAME
+        field = self.wait.until(
+            EC.visibility_of_element_located(self.space_name_field)
+        )
         field.clear()
         field.send_keys(name)
 
-        # Click icon
+        # STEP 4: ICON CLICK
         icon = self.wait.until(EC.presence_of_element_located(self.icon_button))
         self.driver.execute_script("arguments[0].click();", icon)
 
-        # Select color
+        # STEP 5: SELECT COLOR
         self.wait.until(EC.element_to_be_clickable(self.blue_color)).click()
 
-        # Create space
-        create_btn = self.wait.until(EC.presence_of_element_located(self.create_space_button))
+        # STEP 6: CREATE SPACE
+        create_btn = self.wait.until(
+            EC.presence_of_element_located(self.create_space_button)
+        )
 
         self.driver.execute_script("arguments[0].scrollIntoView(true);", create_btn)
-        time.sleep(1)
 
         try:
             create_btn.click()
         except:
             self.driver.execute_script("arguments[0].click();", create_btn)
 
-        # Wait for success
+        # STEP 7: SUCCESS WAIT
         try:
             self.wait.until(EC.visibility_of_element_located(self.success_message))
         except:
             pass
 
-        # Wait overlay disappear
+        # STEP 8: OVERLAY CLOSE
         try:
             self.wait.until(
                 EC.invisibility_of_element_located(
